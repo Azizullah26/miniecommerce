@@ -1,9 +1,12 @@
 import { useState, useMemo } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { ProductCard, type Product } from "@/components/ProductCard";
 import { AddProductDialog } from "@/components/AddProductDialog";
 import { Pagination } from "@/components/Pagination";
 import { CategoryFilter } from "@/components/CategoryFilter";
 import { EmptyState } from "@/components/EmptyState";
+import { queryClient, apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 import speakerImg from '@assets/generated_images/Wireless_Bluetooth_Speaker_3b6ef110.png';
 import bagImg from '@assets/generated_images/Premium_Leather_Laptop_Bag_203b5f04.png';
@@ -12,140 +15,81 @@ import mouseImg from '@assets/generated_images/Wireless_Ergonomic_Mouse_d0fd5f91
 import lampImg from '@assets/generated_images/Modern_Desk_Lamp_cf446b18.png';
 import trackerImg from '@assets/generated_images/Smart_Fitness_Tracker_1984b2cc.png';
 
+const productImages: Record<string, string> = {
+  "Wireless Bluetooth Speaker": speakerImg,
+  "Premium Leather Laptop Bag": bagImg,
+  "Insulated Water Bottle": bottleImg,
+  "Wireless Ergonomic Mouse": mouseImg,
+  "Modern Desk Lamp": lampImg,
+  "Smart Fitness Tracker": trackerImg,
+};
+
 export default function ProductsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const { toast } = useToast();
 
-  const [products, setProducts] = useState<Product[]>([
-    {
-      id: 1,
-      name: "Wireless Bluetooth Speaker",
-      price: 79.99,
-      category: "Electronics",
-      stock_status: "In Stock",
-      image: speakerImg,
+  const { data, isLoading } = useQuery<{ products: Product[]; total: number }>({
+    queryKey: ['/api/products', { 
+      category: selectedCategory, 
+      search: searchQuery,
+      limit: pageSize,
+      offset: (currentPage - 1) * pageSize
+    }],
+  });
+
+  const createProductMutation = useMutation({
+    mutationFn: async (productData: any) => {
+      return await apiRequest("/api/products", {
+        method: "POST",
+        body: JSON.stringify({
+          name: productData.name,
+          price: parseFloat(productData.price),
+          category: productData.category,
+          stock_status: productData.stock_status,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
     },
-    {
-      id: 2,
-      name: "Premium Leather Laptop Bag",
-      price: 129.99,
-      category: "Accessories",
-      stock_status: "In Stock",
-      image: bagImg,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/products'] });
+      toast({
+        title: "Success",
+        description: "Product added successfully",
+      });
+      setCurrentPage(1);
     },
-    {
-      id: 3,
-      name: "Insulated Water Bottle",
-      price: 24.99,
-      category: "Home & Living",
-      stock_status: "Low Stock",
-      image: bottleImg,
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to add product",
+        variant: "destructive",
+      });
     },
-    {
-      id: 4,
-      name: "Wireless Ergonomic Mouse",
-      price: 49.99,
-      category: "Electronics",
-      stock_status: "In Stock",
-      image: mouseImg,
-    },
-    {
-      id: 5,
-      name: "Modern Desk Lamp",
-      price: 89.99,
-      category: "Home & Living",
-      stock_status: "In Stock",
-      image: lampImg,
-    },
-    {
-      id: 6,
-      name: "Smart Fitness Tracker",
-      price: 149.99,
-      category: "Sports & Fitness",
-      stock_status: "Out of Stock",
-      image: trackerImg,
-    },
-    {
-      id: 7,
-      name: "Noise Cancelling Headphones",
-      price: 199.99,
-      category: "Electronics",
-      stock_status: "In Stock",
-    },
-    {
-      id: 8,
-      name: "Portable Phone Charger",
-      price: 39.99,
-      category: "Electronics",
-      stock_status: "Low Stock",
-    },
-    {
-      id: 9,
-      name: "Yoga Mat Pro",
-      price: 59.99,
-      category: "Sports & Fitness",
-      stock_status: "In Stock",
-    },
-    {
-      id: 10,
-      name: "Stainless Steel Coffee Mug",
-      price: 19.99,
-      category: "Home & Living",
-      stock_status: "In Stock",
-    },
-    {
-      id: 11,
-      name: "Wireless Keyboard",
-      price: 69.99,
-      category: "Electronics",
-      stock_status: "In Stock",
-    },
-    {
-      id: 12,
-      name: "Running Shoes",
-      price: 119.99,
-      category: "Sports & Fitness",
-      stock_status: "Low Stock",
-    },
-  ]);
+  });
+
+  const products = useMemo(() => {
+    if (!data?.products) return [];
+    return data.products.map(product => ({
+      ...product,
+      image: productImages[product.name],
+    }));
+  }, [data?.products]);
 
   const categories = useMemo(() => {
-    const uniqueCategories = new Set(products.map((p) => p.category));
+    if (!data?.products) return [];
+    const uniqueCategories = new Set(data.products.map((p) => p.category));
     return Array.from(uniqueCategories).sort();
-  }, [products]);
+  }, [data?.products]);
 
-  const filteredProducts = useMemo(() => {
-    return products.filter((product) => {
-      const matchesCategory =
-        selectedCategory === "all" || product.category === selectedCategory;
-      const matchesSearch =
-        searchQuery === "" ||
-        product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.category.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchesCategory && matchesSearch;
-    });
-  }, [products, selectedCategory, searchQuery]);
-
-  const paginatedProducts = useMemo(() => {
-    const startIndex = (currentPage - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
-    return filteredProducts.slice(startIndex, endIndex);
-  }, [filteredProducts, currentPage, pageSize]);
-
-  const totalPages = Math.ceil(filteredProducts.length / pageSize);
+  const totalPages = Math.ceil((data?.total || 0) / pageSize);
 
   const handleAddProduct = (productData: any) => {
-    const newProduct: Product = {
-      id: products.length + 1,
-      name: productData.name,
-      price: parseFloat(productData.price),
-      category: productData.category,
-      stock_status: productData.stock_status,
-    };
-    setProducts([newProduct, ...products]);
-    setCurrentPage(1);
+    createProductMutation.mutate(productData);
   };
 
   const handlePageChange = (page: number) => {
@@ -168,6 +112,14 @@ export default function ProductsPage() {
     setCurrentPage(1);
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-muted-foreground">Loading products...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -177,7 +129,7 @@ export default function ProductsPage() {
               Products
             </h1>
             <p className="text-sm text-muted-foreground">
-              Showing {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''}
+              Showing {data?.total || 0} product{data?.total !== 1 ? 's' : ''}
             </p>
           </div>
           <AddProductDialog onAddProduct={handleAddProduct} />
@@ -193,7 +145,7 @@ export default function ProductsPage() {
           />
         </div>
 
-        {paginatedProducts.length === 0 ? (
+        {products.length === 0 ? (
           <EmptyState
             message={
               searchQuery || selectedCategory !== "all"
@@ -204,7 +156,7 @@ export default function ProductsPage() {
         ) : (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
-              {paginatedProducts.map((product) => (
+              {products.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>
