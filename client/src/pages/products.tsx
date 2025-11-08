@@ -42,17 +42,11 @@ export default function ProductsPage() {
 
   const createProductMutation = useMutation({
     mutationFn: async (productData: any) => {
-      return await apiRequest("/api/products", {
-        method: "POST",
-        body: JSON.stringify({
-          name: productData.name,
-          price: parseFloat(productData.price),
-          category: productData.category,
-          stock_status: productData.stock_status,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
+      return await apiRequest("POST", "/api/products", {
+        name: productData.name,
+        price: parseFloat(productData.price),
+        category: productData.category,
+        stock_status: productData.stock_status,
       });
     },
     onSuccess: () => {
