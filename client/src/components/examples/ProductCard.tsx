@@ -1,5 +1,4 @@
-import { ProductCard } from '../ProductCard';
-import speakerImg from '@assets/generated_images/Wireless_Bluetooth_Speaker_3b6ef110.png';
+import { ProductCard } from "../ProductCard"
 
 export default function ProductCardExample() {
   const sampleProduct = {
@@ -7,9 +6,9 @@ export default function ProductCardExample() {
     name: "Wireless Bluetooth Speaker",
     price: 79.99,
     category: "Electronics",
-    stock_status: 'In Stock' as const,
-    image: speakerImg
-  };
+    stock_status: "In Stock" as const,
+    image: "/placeholder.svg?height=300&width=300",
+  }
 
-  return <ProductCard product={sampleProduct} />;
+  return <ProductCard product={sampleProduct} />
 }

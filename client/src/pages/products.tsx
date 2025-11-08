@@ -1,116 +1,114 @@
-import { useState, useMemo } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { ProductCard, type Product } from "@/components/ProductCard";
-import { AddProductDialog } from "@/components/AddProductDialog";
-import { Pagination } from "@/components/Pagination";
-import { CategoryFilter } from "@/components/CategoryFilter";
-import { EmptyState } from "@/components/EmptyState";
-import { queryClient, apiRequest } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
+"use client"
 
-import speakerImg from '@assets/generated_images/Wireless_Bluetooth_Speaker_3b6ef110.png';
-import bagImg from '@assets/generated_images/Premium_Leather_Laptop_Bag_203b5f04.png';
-import bottleImg from '@assets/generated_images/Insulated_Water_Bottle_6925d43d.png';
-import mouseImg from '@assets/generated_images/Wireless_Ergonomic_Mouse_d0fd5f91.png';
-import lampImg from '@assets/generated_images/Modern_Desk_Lamp_cf446b18.png';
-import trackerImg from '@assets/generated_images/Smart_Fitness_Tracker_1984b2cc.png';
+import { useState, useMemo } from "react"
+import { useQuery, useMutation } from "@tanstack/react-query"
+import { ProductCard, type Product } from "@/components/ProductCard"
+import { AddProductDialog } from "@/components/AddProductDialog"
+import { Pagination } from "@/components/Pagination"
+import { CategoryFilter } from "@/components/CategoryFilter"
+import { EmptyState } from "@/components/EmptyState"
+import { queryClient, apiRequest } from "@/lib/queryClient"
+import { useToast } from "@/hooks/use-toast"
 
 const productImages: Record<string, string> = {
-  "Wireless Bluetooth Speaker": speakerImg,
-  "Premium Leather Laptop Bag": bagImg,
-  "Insulated Water Bottle": bottleImg,
-  "Wireless Ergonomic Mouse": mouseImg,
-  "Modern Desk Lamp": lampImg,
-  "Smart Fitness Tracker": trackerImg,
-};
+  "Wireless Bluetooth Speaker": "/placeholder.svg?height=300&width=300",
+  "Premium Leather Laptop Bag": "/placeholder.svg?height=300&width=300",
+  "Insulated Water Bottle": "/placeholder.svg?height=300&width=300",
+  "Wireless Ergonomic Mouse": "/placeholder.svg?height=300&width=300",
+  "Modern Desk Lamp": "/placeholder.svg?height=300&width=300",
+  "Smart Fitness Tracker": "/placeholder.svg?height=300&width=300",
+}
 
 export default function ProductsPage() {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-  const [selectedCategory, setSelectedCategory] = useState("all");
-  const [searchQuery, setSearchQuery] = useState("");
-  const { toast } = useToast();
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
+  const [selectedCategory, setSelectedCategory] = useState("all")
+  const [searchQuery, setSearchQuery] = useState("")
+  const { toast } = useToast()
 
   const { data, isLoading } = useQuery<{ products: Product[]; total: number }>({
-    queryKey: ['/api/products', { 
-      category: selectedCategory, 
-      search: searchQuery,
-      limit: pageSize,
-      offset: (currentPage - 1) * pageSize
-    }],
-  });
+    queryKey: [
+      "/api/products",
+      {
+        category: selectedCategory,
+        search: searchQuery,
+        limit: pageSize,
+        offset: (currentPage - 1) * pageSize,
+      },
+    ],
+  })
 
   const { data: allCategories = [] } = useQuery<string[]>({
-    queryKey: ['/api/categories'],
-  });
+    queryKey: ["/api/categories"],
+  })
 
   const createProductMutation = useMutation({
     mutationFn: async (productData: any) => {
       return await apiRequest("POST", "/api/products", {
         name: productData.name,
-        price: parseFloat(productData.price),
+        price: Number.parseFloat(productData.price),
         category: productData.category,
         stock_status: productData.stock_status,
-      });
+      })
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/products'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
+      queryClient.invalidateQueries({ queryKey: ["/api/products"] })
+      queryClient.invalidateQueries({ queryKey: ["/api/categories"] })
       toast({
         title: "Success",
         description: "Product added successfully",
-      });
-      setCurrentPage(1);
+      })
+      setCurrentPage(1)
     },
     onError: (error: any) => {
       toast({
         title: "Error",
         description: error.message || "Failed to add product",
         variant: "destructive",
-      });
+      })
     },
-  });
+  })
 
   const products = useMemo(() => {
-    if (!data?.products) return [];
-    return data.products.map(product => ({
+    if (!data?.products) return []
+    return data.products.map((product) => ({
       ...product,
       image: productImages[product.name],
-    }));
-  }, [data?.products]);
+    }))
+  }, [data?.products])
 
-  const totalPages = Math.ceil((data?.total || 0) / pageSize);
+  const totalPages = Math.ceil((data?.total || 0) / pageSize)
 
   const handleAddProduct = (productData: any) => {
-    createProductMutation.mutate(productData);
-  };
+    createProductMutation.mutate(productData)
+  }
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+    setCurrentPage(page)
+    window.scrollTo({ top: 0, behavior: "smooth" })
+  }
 
   const handlePageSizeChange = (size: number) => {
-    setPageSize(size);
-    setCurrentPage(1);
-  };
+    setPageSize(size)
+    setCurrentPage(1)
+  }
 
   const handleCategoryChange = (category: string) => {
-    setSelectedCategory(category);
-    setCurrentPage(1);
-  };
+    setSelectedCategory(category)
+    setCurrentPage(1)
+  }
 
   const handleSearchChange = (query: string) => {
-    setSearchQuery(query);
-    setCurrentPage(1);
-  };
+    setSearchQuery(query)
+    setCurrentPage(1)
+  }
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-muted-foreground">Loading products...</div>
       </div>
-    );
+    )
   }
 
   return (
@@ -122,7 +120,7 @@ export default function ProductsPage() {
               Products
             </h1>
             <p className="text-sm text-muted-foreground">
-              Showing {data?.total || 0} product{data?.total !== 1 ? 's' : ''}
+              Showing {data?.total || 0} product{data?.total !== 1 ? "s" : ""}
             </p>
           </div>
           <AddProductDialog onAddProduct={handleAddProduct} />
@@ -167,5 +165,5 @@ export default function ProductsPage() {
         )}
       </div>
     </div>
-  );
+  )
 }
