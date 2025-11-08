@@ -1,0 +1,132 @@
+To build and document a small-scale full stack project using React (frontend), Node.js + Express (backend), SQLite (for local DB), and a mock AWS deployment plan. The output should include working source code, folder structure, and clear documentation in README.md.
+
+🧩 Technical Requirements
+1. Frontend (React + Vite)
+
+Create a clean, responsive interface with:
+
+A product list showing: Product Name, Price, Category, and Stock Status.
+
+A form to add new products with validation.
+
+Use Axios or Fetch to connect with the backend.
+
+Use simple CSS or Tailwind for styling.
+
+Bonus: Include pagination and category filtering.
+
+2. Backend (Node.js + Express)
+
+REST API with endpoints:
+
+GET /products → Fetch all products
+
+POST /products → Add new product
+
+Store data in SQLite (for local use) or MySQL (configurable).
+
+Validate incoming requests.
+
+Use modular folder structure:
+
+backend/
+  src/
+    index.js
+    routes/products.js
+    controllers/productController.js
+    db.js
+
+
+Include .env.example with DB config and port variables.
+
+3. Database
+
+Schema:
+
+products (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT,
+  price REAL,
+  category TEXT,
+  stock_status TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+)
+
+4. AWS / Cloud Integration (Documentation Only)
+
+In README.md, include how to deploy:
+
+API on AWS EC2 or Elastic Beanstalk
+
+Database on AWS RDS
+
+Product images on AWS S3
+
+Include IAM role setup, cost-free mock config, and CI/CD (GitHub Actions).
+
+5. Documentation Requirements
+
+Generate a README.md that includes:
+
+Project Overview
+
+Tech Stack Justification
+
+Architecture Overview (simple diagram or description)
+
+Task Breakdown for a 3-member team (frontend, backend, devops)
+
+Deployment Plan (AWS steps)
+
+Future Enhancements section
+
+Local setup guide (commands to run backend/frontend)
+
+Example API request/responses
+
+Also include inline comments in code explaining each step.
+
+🧠 Bonus Features (Optional)
+
+Basic JWT authentication for admin login to access POST /products.
+
+Add pagination or category filter in product list.
+
+Add Dockerfile + docker-compose.yml for local setup.
+
+📦 Deliverables
+
+The final output should contain:
+
+frontend/ folder (React app)
+
+backend/ folder (Express + SQLite)
+
+README.md file with full documentation
+
+.env.example
+
+docker-compose.yml (optional)
+
+Example screenshots or Loom recording note
+
+⚙️ Output Format
+
+Please generate:
+
+Full project folder structure with files and code (in Replit workspace).
+
+A detailed README.md (well-formatted markdown) at the root describing everything above.
+
+Commented code and easy-to-run scripts.
+
+🧭 Example run commands (to include in README)
+# Backend
+cd backend
+npm install
+node src/index.js
+
+# Frontend
+cd frontend
+npm install
+npm run dev
