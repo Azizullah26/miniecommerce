@@ -40,7 +40,7 @@ The application demonstrates modern web development best practices with a clean 
 
 ## 🏗 Architecture Overview
 
-```
+\`\`\`
 ┌─────────────────────────────────────────────────────────────┐
 │                        Client (React)                        │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
@@ -72,7 +72,7 @@ The application demonstrates modern web development best practices with a clean 
 │  │  (In-Memory / Future: SQLite/PostgreSQL)            │  │
 │  └──────────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────┘
-```
+\`\`\`
 
 ### Key Design Decisions
 
@@ -139,25 +139,25 @@ The application demonstrates modern web development best practices with a clean 
 ### Installation Steps
 
 1. **Clone the repository** (if applicable)
-```bash
+\`\`\`bash
 git clone <repository-url>
 cd ecommerce-product-listing
-```
+\`\`\`
 
 2. **Install dependencies**
-```bash
+\`\`\`bash
 npm install
-```
+\`\`\`
 
 3. **Start the development server**
-```bash
+\`\`\`bash
 npm run dev
-```
+\`\`\`
 
 The application will start on `http://localhost:5000` with both frontend and backend running concurrently.
 
 ### Project Structure
-```
+\`\`\`
 .
 ├── client/                 # Frontend React application
 │   ├── src/
@@ -173,14 +173,14 @@ The application will start on `http://localhost:5000` with both frontend and bac
 ├── shared/               # Shared types and schemas
 │   └── schema.ts         # Product schema and validation
 └── README.md
-```
+\`\`\`
 
 ## 📡 API Documentation
 
 ### Base URL
-```
+\`\`\`
 http://localhost:5000/api
-```
+\`\`\`
 
 ### Endpoints
 
@@ -198,12 +198,12 @@ Fetch all products with optional filtering and pagination.
 | offset    | number | No       | Number of products to skip (default: 0) |
 
 **Example Request**:
-```bash
+\`\`\`bash
 curl "http://localhost:5000/api/products?category=Electronics&limit=10&offset=0"
-```
+\`\`\`
 
 **Example Response**:
-```json
+\`\`\`json
 {
   "products": [
     {
@@ -225,7 +225,7 @@ curl "http://localhost:5000/api/products?category=Electronics&limit=10&offset=0"
   ],
   "total": 2
 }
-```
+\`\`\`
 
 #### 2. Get Product by ID
 Fetch a single product by its ID.
@@ -233,12 +233,12 @@ Fetch a single product by its ID.
 **Endpoint**: `GET /api/products/:id`
 
 **Example Request**:
-```bash
+\`\`\`bash
 curl http://localhost:5000/api/products/1
-```
+\`\`\`
 
 **Example Response**:
-```json
+\`\`\`json
 {
   "id": 1,
   "name": "Wireless Bluetooth Speaker",
@@ -247,7 +247,7 @@ curl http://localhost:5000/api/products/1
   "stock_status": "In Stock",
   "created_at": "2025-01-08T10:30:00.000Z"
 }
-```
+\`\`\`
 
 #### 3. Create Product
 Add a new product to the catalog.
@@ -255,14 +255,14 @@ Add a new product to the catalog.
 **Endpoint**: `POST /api/products`
 
 **Request Body**:
-```json
+\`\`\`json
 {
   "name": "Premium Headphones",
   "price": 199.99,
   "category": "Electronics",
   "stock_status": "In Stock"
 }
-```
+\`\`\`
 
 **Validation Rules**:
 - `name`: String, 1-100 characters, required
@@ -271,7 +271,7 @@ Add a new product to the catalog.
 - `stock_status`: Enum ("In Stock", "Low Stock", "Out of Stock"), required
 
 **Example Request**:
-```bash
+\`\`\`bash
 curl -X POST http://localhost:5000/api/products \
   -H "Content-Type: application/json" \
   -d '{
@@ -280,10 +280,10 @@ curl -X POST http://localhost:5000/api/products \
     "category": "Electronics",
     "stock_status": "In Stock"
   }'
-```
+\`\`\`
 
 **Example Response** (201 Created):
-```json
+\`\`\`json
 {
   "id": 13,
   "name": "Premium Headphones",
@@ -292,15 +292,15 @@ curl -X POST http://localhost:5000/api/products \
   "stock_status": "In Stock",
   "created_at": "2025-01-08T10:45:00.000Z"
 }
-```
+\`\`\`
 
 **Error Response** (400 Bad Request):
-```json
+\`\`\`json
 {
   "error": "Validation failed",
   "details": "Validation error: Expected number, received string at \"price\""
 }
-```
+\`\`\`
 
 ## ☁️ AWS Deployment Plan
 
@@ -316,18 +316,18 @@ curl -X POST http://localhost:5000/api/products \
    - Allow HTTP (80) and HTTPS (443) from anywhere
    - Allow SSH (22) from your IP only
 4. Install Node.js 20+:
-   ```bash
+   \`\`\`bash
    curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
    sudo apt-get install -y nodejs
-   ```
+   \`\`\`
 5. Clone repository and install dependencies
 6. Use PM2 for process management:
-   ```bash
+   \`\`\`bash
    npm install -g pm2
    pm2 start npm --name "ecommerce-api" -- start
    pm2 startup
    pm2 save
-   ```
+   \`\`\`
 
 **Alternative**: Use AWS Elastic Beanstalk for easier deployment
 - Automatic load balancing and auto-scaling
@@ -342,9 +342,9 @@ curl -X POST http://localhost:5000/api/products \
 2. Configure security group to allow connections from EC2 only
 3. Note connection details (endpoint, port, credentials)
 4. Update application environment variables:
-   ```
+   \`\`\`
    DATABASE_URL=postgresql://username:password@endpoint:5432/dbname
-   ```
+   \`\`\`
 5. Run database migrations (when implemented)
 
 **Migration from In-Memory**:
@@ -358,7 +358,7 @@ curl -X POST http://localhost:5000/api/products \
 **Setup Steps**:
 1. Create S3 bucket with unique name (e.g., `ecommerce-products-images`)
 2. Configure bucket policy for public read access:
-   ```json
+   \`\`\`json
    {
      "Version": "2012-10-17",
      "Statement": [{
@@ -369,19 +369,19 @@ curl -X POST http://localhost:5000/api/products \
        "Resource": "arn:aws:s3:::ecommerce-products-images/*"
      }]
    }
-   ```
+   \`\`\`
 3. Enable CloudFront CDN for faster delivery (optional)
 4. Install AWS SDK:
-   ```bash
+   \`\`\`bash
    npm install @aws-sdk/client-s3
-   ```
+   \`\`\`
 5. Implement image upload endpoint in API
 6. Store S3 URLs in product records
 
 #### 4. IAM Roles and Permissions
 
 **EC2 Instance Role**:
-```json
+\`\`\`json
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -403,10 +403,10 @@ curl -X POST http://localhost:5000/api/products \
     }
   ]
 }
-```
+\`\`\`
 
 **Deployment User** (for CI/CD):
-```json
+\`\`\`json
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -422,13 +422,13 @@ curl -X POST http://localhost:5000/api/products \
     }
   ]
 }
-```
+\`\`\`
 
 ### CI/CD Pipeline (GitHub Actions)
 
 Create `.github/workflows/deploy.yml`:
 
-```yaml
+\`\`\`yaml
 name: Deploy to AWS
 
 on:
@@ -474,19 +474,19 @@ jobs:
           npm run build &&
           pm2 restart ecommerce-api
         '
-```
+\`\`\`
 
 ### Environment Configuration
 
 Create `.env.production`:
-```bash
+\`\`\`bash
 NODE_ENV=production
 PORT=5000
 DATABASE_URL=postgresql://user:pass@rds-endpoint:5432/ecommerce
 AWS_REGION=us-east-1
 S3_BUCKET=ecommerce-products-images
 SESSION_SECRET=your-secret-key-here
-```
+\`\`\`
 
 ### Cost Estimates (Monthly)
 
@@ -552,7 +552,7 @@ SESSION_SECRET=your-secret-key-here
 ## 🧪 Testing
 
 ### Running Tests (Future Implementation)
-```bash
+\`\`\`bash
 # Frontend tests
 npm run test:client
 
@@ -561,7 +561,7 @@ npm run test:server
 
 # E2E tests
 npm run test:e2e
-```
+\`\`\`
 
 ### Test Coverage Goals
 - Unit tests: 80%+ coverage

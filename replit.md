@@ -27,7 +27,7 @@ Preferred communication style: Simple, everyday language.
 - **Design System**: Material Design principles adapted for data-dense interfaces (documented in `design_guidelines.md`)
 
 **Component Structure**
-```
+\`\`\`
 client/src/
 ├── components/          # Reusable UI components
 │   ├── ui/             # shadcn/ui base components
@@ -44,7 +44,7 @@ client/src/
 │   ├── queryClient.ts  # React Query configuration
 │   └── utils.ts        # General utilities (cn helper)
 └── App.tsx             # Root component with providers
-```
+\`\`\`
 
 ### Backend Architecture
 
@@ -74,18 +74,18 @@ client/src/
   - Migration strategy: Run `npm run db:push` to sync schema with database
 
 **Server Structure**
-```
+\`\`\`
 server/
 ├── index.ts           # Express app setup, middleware, Vite integration
 ├── routes.ts          # API route definitions and handlers
 ├── storage.ts         # Storage interface and in-memory implementation
 └── vite.ts            # Development server integration with Vite
-```
+\`\`\`
 
 ### Data Layer
 
 **Schema Design** (PostgreSQL-ready)
-```typescript
+\`\`\`typescript
 // Users table (authentication scaffold)
 users {
   id: uuid (primary key)
@@ -102,7 +102,7 @@ products {
   stock_status: text (enum: "In Stock" | "Low Stock" | "Out of Stock")
   created_at: timestamp
 }
-```
+\`\`\`
 
 **Type Safety**
 - Shared types between client and server via `shared/schema.ts`
