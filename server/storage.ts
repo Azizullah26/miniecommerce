@@ -148,11 +148,13 @@ export class MemStorage implements IStorage {
   }): Promise<{ products: Product[]; total: number }> {
     let allProducts = Array.from(this.products.values());
 
-    if (options?.category && options.category !== "all") {
+    // Filter by category only if a specific category is provided (not "all" or empty)
+    if (options?.category && options.category !== "all" && options.category.trim() !== "") {
       allProducts = allProducts.filter(p => p.category === options.category);
     }
 
-    if (options?.search) {
+    // Filter by search query
+    if (options?.search && options.search.trim() !== "") {
       const searchLower = options.search.toLowerCase();
       allProducts = allProducts.filter(p => 
         p.name.toLowerCase().includes(searchLower) || 
@@ -160,6 +162,7 @@ export class MemStorage implements IStorage {
       );
     }
 
+    // Sort by newest first
     allProducts.sort((a, b) => b.created_at.getTime() - a.created_at.getTime());
 
     const total = allProducts.length;

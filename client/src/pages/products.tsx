@@ -40,6 +40,10 @@ export default function ProductsPage() {
     }],
   });
 
+  const { data: allCategories = [] } = useQuery<string[]>({
+    queryKey: ['/api/categories'],
+  });
+
   const createProductMutation = useMutation({
     mutationFn: async (productData: any) => {
       return await apiRequest("POST", "/api/products", {
@@ -51,6 +55,7 @@ export default function ProductsPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/products'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
       toast({
         title: "Success",
         description: "Product added successfully",
@@ -72,12 +77,6 @@ export default function ProductsPage() {
       ...product,
       image: productImages[product.name],
     }));
-  }, [data?.products]);
-
-  const categories = useMemo(() => {
-    if (!data?.products) return [];
-    const uniqueCategories = new Set(data.products.map((p) => p.category));
-    return Array.from(uniqueCategories).sort();
   }, [data?.products]);
 
   const totalPages = Math.ceil((data?.total || 0) / pageSize);
@@ -131,7 +130,7 @@ export default function ProductsPage() {
 
         <div className="mb-6">
           <CategoryFilter
-            categories={categories}
+            categories={allCategories}
             selectedCategory={selectedCategory}
             searchQuery={searchQuery}
             onCategoryChange={handleCategoryChange}

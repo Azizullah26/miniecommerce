@@ -5,6 +5,18 @@ import { insertProductSchema } from "@shared/schema";
 import { fromError } from "zod-validation-error";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // GET /api/categories - Fetch all unique categories
+  app.get("/api/categories", async (req, res) => {
+    try {
+      const result = await storage.getProducts({});
+      const categories = Array.from(new Set(result.products.map(p => p.category))).sort();
+      res.json(categories);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      res.status(500).json({ error: "Failed to fetch categories" });
+    }
+  });
+
   // GET /api/products - Fetch all products with optional filtering and pagination
   app.get("/api/products", async (req, res) => {
     try {
